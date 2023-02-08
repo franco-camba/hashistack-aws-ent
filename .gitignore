@@ -11,3 +11,5 @@ Vagrantfile
 ignore*
 nomad.token
 *.pem
+*.hclic
+*.demo
