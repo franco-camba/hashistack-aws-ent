@@ -1,6 +1,6 @@
 data_dir  = "/opt/nomad/data"
 bind_addr = "0.0.0.0"
-
+license_path = "/etc/nomad.d"
 # Enable the server
 server {
   enabled          = true

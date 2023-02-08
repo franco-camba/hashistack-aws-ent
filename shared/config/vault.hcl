@@ -1,5 +1,5 @@
 ui = true
-
+license_path = "/etc/vault.d"
 backend "consul" {
   path          = "vault/"
   address       = "IP_ADDRESS:8500"
