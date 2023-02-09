@@ -1,0 +1,18 @@
+# Packer variables (all are required)
+region                    = "AWS_REGION"
+
+# Terraform variables (all are required)
+key_name                  = "AWS_KEY_PAIR_NAME"
+ami                       = "AMI_ID_FROM_PACKER"
+nomad_consul_token_id     = "UUID_FROM_TF_CONSOLE"
+nomad_consul_token_secret = "UUID_FROM_TF_CONSOLE"
+
+# These variables will default to the values shown
+# and do not need to be updated unless you want to
+# change them
+# allowlist_ip            = "0.0.0.0/0"
+# name                    = "nomad"
+# server_instance_type    = "t2.micro"
+# server_count            = "3"
+# client_instance_type    = "t2.micro"
+# client_count            = "3"
