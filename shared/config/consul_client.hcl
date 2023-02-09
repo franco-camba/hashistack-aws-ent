@@ -5,6 +5,7 @@ bind_addr = "0.0.0.0"
 client_addr = "0.0.0.0"
 advertise_addr = "IP_ADDRESS"
 retry_join = ["RETRY_JOIN"]
+license_path = "/ops/shared/config/consul.hclic"
 
 acl {
     enabled = true

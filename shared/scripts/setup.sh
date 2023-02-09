@@ -16,13 +16,13 @@ CONSULCONFIGDIR=/etc/consul.d
 CONSULDIR=/opt/consul
 
 # VAULTVERSION=1.5.3 Use this for OSS
-VAULTVERSION=vault_1.12.3+ent
+VAULTVERSION=1.12.3+ent
 VAULTDOWNLOAD=https://releases.hashicorp.com/vault/${VAULTVERSION}/vault_${VAULTVERSION}_linux_amd64.zip
 VAULTCONFIGDIR=/etc/vault.d
 VAULTDIR=/opt/vault
 
 # NOMADVERSION=1.3.3 Use this for OSS
-NOMADVERSION=nomad_1.4.3+ent
+NOMADVERSION=1.4.3+ent
 NOMADDOWNLOAD=https://releases.hashicorp.com/nomad/${NOMADVERSION}/nomad_${NOMADVERSION}_linux_amd64.zip
 NOMADCONFIGDIR=/etc/nomad.d
 NOMADDIR=/opt/nomad
@@ -52,7 +52,7 @@ case $CLOUD_ENV in
 esac
 
 sudo apt-get update
-sudo apt-get install -y unzip tree redis-tools jq curl tmux
+sudo apt-get install -y unzip jq redis-tools curl tmux # removed tree and redis-tools
 sudo apt-get clean
 
 
@@ -65,7 +65,8 @@ sudo ufw disable || echo "ufw not installed"
 curl -L $CONSULDOWNLOAD > consul.zip
 
 ## Install
-sudo unzip consul.zip -d /usr/local/bin
+sudo unzip consul.zip -d /usr/local/bin/consul_bin
+sudo cp /usr/local/bin/consul_bin/consul /usr/local/bin
 sudo chmod 0755 /usr/local/bin/consul
 sudo chown root:root /usr/local/bin/consul
 
@@ -80,7 +81,8 @@ sudo chmod 755 $CONSULDIR
 curl -L $VAULTDOWNLOAD > vault.zip
 
 ## Install
-sudo unzip vault.zip -d /usr/local/bin
+sudo unzip vault.zip -d /usr/local/bin/vault_bin
+sudo cp /usr/local/bin/vault_bin/vault /usr/local/bin
 sudo chmod 0755 /usr/local/bin/vault
 sudo chown root:root /usr/local/bin/vault
 
@@ -95,7 +97,8 @@ sudo chmod 755 $VAULTDIR
 curl -L $NOMADDOWNLOAD > nomad.zip
 
 ## Install
-sudo unzip nomad.zip -d /usr/local/bin
+sudo unzip nomad.zip -d /usr/local/bin/nomad_bin
+sudo cp /usr/local/bin/nomad_bin/nomad /usr/local/bin
 sudo chmod 0755 /usr/local/bin/nomad
 sudo chown root:root /usr/local/bin/nomad
 

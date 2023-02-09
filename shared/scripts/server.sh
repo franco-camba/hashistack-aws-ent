@@ -3,7 +3,7 @@
 set -e
 
 CONFIGDIR=/ops/shared/config
-LICENSEDIR=/ops/trial # Added for Enterprise License
+# LICENSEDIR=/ops/trial # Added for Enterprise License
 CONSULCONFIGDIR=/etc/consul.d
 VAULTCONFIGDIR=/etc/vault.d
 NOMADCONFIGDIR=/etc/nomad.d
@@ -44,7 +44,7 @@ sed -i "s/SERVER_COUNT/$SERVER_COUNT/g" $CONFIGDIR/consul.hcl
 sed -i "s/RETRY_JOIN/$RETRY_JOIN/g" $CONFIGDIR/consul.hcl
 sudo cp $CONFIGDIR/consul.hcl $CONSULCONFIGDIR
 sudo cp $CONFIGDIR/consul_$CLOUD.service /etc/systemd/system/consul.service
-sudo cp $LICENSEDIR/consul.hclic $CONSULCONFIGDIR
+sudo cp $CONFIGDIR/consul.hclic $CONSULCONFIGDIR
 
 sudo systemctl enable consul.service
 sudo systemctl start consul.service
@@ -56,7 +56,7 @@ export CONSUL_RPC_ADDR=$IP_ADDRESS:8400
 sed -i "s/IP_ADDRESS/$IP_ADDRESS/g" $CONFIGDIR/vault.hcl
 sudo cp $CONFIGDIR/vault.hcl $VAULTCONFIGDIR
 sudo cp $CONFIGDIR/vault.service /etc/systemd/system/vault.service
-sudo cp $LICENSEDIR/vault.hclic $VAULTCONFIGDIR
+sudo cp $CONFIGDIR/vault.hclic $VAULTCONFIGDIR
 
 sudo systemctl enable vault.service
 sudo systemctl start vault.service
@@ -74,7 +74,7 @@ fi
 sed -i "s/SERVER_COUNT/$SERVER_COUNT/g" $CONFIGDIR/nomad.hcl
 sudo cp $CONFIGDIR/nomad.hcl $NOMADCONFIGDIR
 sudo cp $CONFIGDIR/nomad.service /etc/systemd/system/nomad.service
-sudo cp $LICENSEDIR/nomad.hclic $NOMADCONFIGDIR
+sudo cp $CONFIGDIR/nomad.hclic $NOMADCONFIGDIR
 
 sudo systemctl enable nomad.service
 sudo systemctl start nomad.service
