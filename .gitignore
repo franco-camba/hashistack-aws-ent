@@ -15,4 +15,5 @@ nomad.token
 *.demo
 *.troubleshooting
 nomad-jobs/
+vault.token
 *.token
