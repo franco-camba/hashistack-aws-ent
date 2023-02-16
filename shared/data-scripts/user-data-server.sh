@@ -44,6 +44,14 @@ for i in {1..9}; do
     fi
 done
 
+# DNS Policy for Service Discovery
+consul acl policy create -name 'dns-requests' -rules="@$ACL_DIRECTORY/consul-acl-dns-requests.hcl" -token-file=$CONSUL_BOOTSTRAP_TOKEN
+consul acl token update -id 00000000-0000-0000-0000-000000000002 --merge-policies -description "Anonymous Token - Can List Nodes" -policy-name dns-requests
+
+# Vault policy/ACL 
+consul acl policy create -name 'vault-server' -rules="@$ACL_DIRECTORY/consul-acl-vault-server.hcl" -token-file=$CONSUL_BOOTSTRAP_TOKEN
+export VAULT_ACL=$(consul acl token create -policy-name=vault-server -token-file=$CONSUL_BOOTSTRAP_TOKEN -format=json | jq .SecretID) 
+sed -i "s/CONSUL_ACL_TOKEN/${VAULT_ACL}/g" $ACL_DIRECTORY/vault.hcl
 
 consul acl policy create -name 'nomad-auto-join' -rules="@$ACL_DIRECTORY/consul-acl-nomad-auto-join.hcl" -token-file=$CONSUL_BOOTSTRAP_TOKEN
 

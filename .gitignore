@@ -13,3 +13,5 @@ nomad.token
 *.pem
 *.hclic
 *.demo
+*.troubleshooting
+nomad-jobs/

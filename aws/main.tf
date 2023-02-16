@@ -6,9 +6,17 @@ data "aws_vpc" "default" {
   default = true
 }
 
-resource "aws_security_group" "consul_nomad_ui_ingress" {
+resource "aws_security_group" "consul_nomad_vault_ingress" {
   name   = "${var.name}-ui-ingress"
   vpc_id = data.aws_vpc.default.id
+
+  # Vault
+  ingress {
+    from_port       = 8200
+    to_port         = 8200
+    protocol        = "tcp"
+    cidr_blocks     = [var.allowlist_ip]
+  }
 
   # Nomad
   ingress {
@@ -22,6 +30,14 @@ resource "aws_security_group" "consul_nomad_ui_ingress" {
   ingress {
     from_port       = 8500
     to_port         = 8500
+    protocol        = "tcp"
+    cidr_blocks     = [var.allowlist_ip]
+  }
+
+  # Consul DNS
+  ingress {
+    from_port       = 8600
+    to_port         = 8600
     protocol        = "tcp"
     cidr_blocks     = [var.allowlist_ip]
   }
@@ -135,6 +151,9 @@ resource "aws_instance" "server" {
     },
     {
       "NomadType" = "server"
+    },
+    {
+      "Vault" = "Server"
     }
   )
 
@@ -152,6 +171,7 @@ resource "aws_instance" "server" {
     nomad_binary              = var.nomad_binary
     nomad_consul_token_id     = var.nomad_consul_token_id
     nomad_consul_token_secret = var.nomad_consul_token_secret
+    VAULT_ACL = ""
   })
   iam_instance_profile = aws_iam_instance_profile.instance_profile.name
 
