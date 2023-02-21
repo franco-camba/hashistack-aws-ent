@@ -11,15 +11,16 @@ NOMAD_BOOTSTRAP_TOKEN="/tmp/nomad_bootstrap"
 NOMAD_USER_TOKEN="/tmp/nomad_user_token"
 
 sed -i "s/CONSUL_TOKEN/${nomad_consul_token_secret}/g" /etc/nomad.d/nomad.hcl
+#sed -i "s/CONSUL_ACL_TOKEN/${nomad_consul_token_secret}/g" /etc/vault.d/vault.hcl
 
 sudo systemctl restart nomad
-
+sudo systemctl restart vault.service
 echo "Finished server setup"
 
 echo "ACL bootstrap begin"
 
 # Wait until leader has been elected and bootstrap consul ACLs
-for i in {1..9}; do
+for i in {1..25}; do
     # capture stdout and stderr
     set +e
     sleep 5
@@ -44,15 +45,6 @@ for i in {1..9}; do
     fi
 done
 
-# DNS Policy for Service Discovery
-consul acl policy create -name 'dns-requests' -rules="@$ACL_DIRECTORY/consul-acl-dns-requests.hcl" -token-file=$CONSUL_BOOTSTRAP_TOKEN
-consul acl token update -id 00000000-0000-0000-0000-000000000002 --merge-policies -description "Anonymous Token - Can List Nodes" -policy-name dns-requests
-
-# Vault policy/ACL 
-consul acl policy create -name 'vault-server' -rules="@$ACL_DIRECTORY/consul-acl-vault-server.hcl" -token-file=$CONSUL_BOOTSTRAP_TOKEN
-export VAULT_ACL=$(consul acl token create -policy-name=vault-server -token-file=$CONSUL_BOOTSTRAP_TOKEN -format=json | jq .SecretID) 
-sed -i "s/CONSUL_ACL_TOKEN/${VAULT_ACL}/g" $ACL_DIRECTORY/vault.hcl
-
 consul acl policy create -name 'nomad-auto-join' -rules="@$ACL_DIRECTORY/consul-acl-nomad-auto-join.hcl" -token-file=$CONSUL_BOOTSTRAP_TOKEN
 
 consul acl role create -name "nomad-auto-join" -description "Role with policies necessary for nomad servers and clients to auto-join via Consul." -policy-name "nomad-auto-join" -token-file=$CONSUL_BOOTSTRAP_TOKEN
@@ -60,7 +52,7 @@ consul acl role create -name "nomad-auto-join" -description "Role with policies 
 consul acl token create -accessor=${nomad_consul_token_id} -secret=${nomad_consul_token_secret} -description "Nomad server/client auto-join token" -role-name nomad-auto-join -token-file=$CONSUL_BOOTSTRAP_TOKEN
 
 # Wait for nomad servers to come up and bootstrap nomad ACL
-for i in {1..12}; do
+for i in {1..25}; do
     # capture stdout and stderr
     set +e
     sleep 5
@@ -93,3 +85,17 @@ consul kv put -token-file=$CONSUL_BOOTSTRAP_TOKEN nomad_user_token "$(cat $NOMAD
 
 echo "ACL bootstrap end"
 
+# DNS Policy for Service Discovery
+consul acl policy create -name 'dns-requests' -rules="@$ACL_DIRECTORY/consul-acl-dns-requests.hcl" -token-file=$CONSUL_BOOTSTRAP_TOKEN
+consul acl policy create -name 'vault-server' -rules="@$ACL_DIRECTORY/consul-acl-vault-server.hcl" -token-file=$CONSUL_BOOTSTRAP_TOKEN
+VAULT_ACL=$(consul acl token create -policy-name=vault-server -token-file=$CONSUL_BOOTSTRAP_TOKEN -format=json | jq .SecretID) 
+sed -i "s/\"CONSUL_ACL_TOKEN\"/$VAULT_ACL/g" /etc/vault.d/vault.hcl
+# Update anonymous token permission to allow dns queries
+consul acl token update -id 00000000-0000-0000-0000-000000000002 --merge-policies -description "Anonymous Token - Can List Nodes" -policy-name dns-requests -token-file=$CONSUL_BOOTSTRAP_TOKEN
+sudo systemctl restart vault
+# Vault policy/ACL 
+#consul acl policy create -name 'vault-server' -rules="@$ACL_DIRECTORY/consul-acl-vault-server.hcl" -token-file=$CONSUL_BOOTSTRAP_TOKEN
+#VAULT_ACL=$(consul acl token create -policy-name=vault-server -token-file=$CONSUL_BOOTSTRAP_TOKEN -format=json | jq .SecretID)
+#sed -i "s/CONSUL_ACL_TOKEN/$VAULT_ACL/g" $ACL_DIRECTORY/vault.hcl
+
+echo "Vault ACL bootstrapped"

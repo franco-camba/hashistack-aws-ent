@@ -17,3 +17,4 @@ nomad.token
 nomad-jobs/
 vault.token
 *.token
+*.init

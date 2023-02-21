@@ -5,7 +5,7 @@ backend "consul" {
   address       = "IP_ADDRESS:8500"
   cluster_addr  = "https://IP_ADDRESS:8201"
   redirect_addr = "http://IP_ADDRESS:8200"
-  token = CONSUL_ACL_TOKEN
+  token = "CONSUL_ACL_TOKEN"
 }
 
 listener "tcp" {

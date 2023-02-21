@@ -57,6 +57,8 @@ sed -i "s/IP_ADDRESS/$IP_ADDRESS/g" $CONFIGDIR/vault.hcl
 sudo cp $CONFIGDIR/vault.hcl $VAULTCONFIGDIR
 sudo cp $CONFIGDIR/vault.service /etc/systemd/system/vault.service
 sudo cp $CONFIGDIR/vault.hclic $VAULTCONFIGDIR
+sudo cp $CONFIGDIR/vault-setup.sh $VAULTCONFIGDIR
+sudo chmod +x $VAULTCONFIGDIR/vault-setup.sh
 
 sudo systemctl enable vault.service
 sudo systemctl start vault.service

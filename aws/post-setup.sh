@@ -29,3 +29,19 @@ if [ ! -f $NOMAD_USER_TOKEN_FILENAME ]; then
 else 
     echo -e "\n***\nThe $NOMAD_USER_TOKEN_FILENAME file already exists - not overwriting. If this is a new run, delete it first.\n***"
 fi
+
+VAULT_PRIMARY="http://13.40.199.164"
+
+# initializing Vault
+echo "initializing Vault"
+RAW_INIT=$(curl \
+    --request POST \
+    --data @payload.json \
+    $VAULT_PRIMARY:8200/v1/sys/init)
+touch vault.init
+echo "VAULT_UNSEAL_KEY=`echo $RAW_INIT | jq .keys | jq .'[0]'`" >> vault.init
+echo "VAULT_TOKEN=`echo $RAW_INIT | jq .root_token`" >> vault.init
+export CONSUL_HTTP_ADDR=$LB_ADDRESS:8500
+export CONSUL_HTTP_TOKEN=$CONSUL_BOOTSTRAP_TOKEN
+echo "VAULT_CONSUL_ACL_TOKEN=`consul acl token create -policy-name=vault-server  -format=json | jq .SecretID`" >> vault.init
+echo "VAULT_PRIMARY_ADDR=$VAULT_PRIMARY:8200" >> vault.init
