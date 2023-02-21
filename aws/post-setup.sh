@@ -30,7 +30,7 @@ else
     echo -e "\n***\nThe $NOMAD_USER_TOKEN_FILENAME file already exists - not overwriting. If this is a new run, delete it first.\n***"
 fi
 
-VAULT_PRIMARY="http://13.40.199.164"
+VAULT_PRIMARY="INSERT_HERE"
 
 # initializing Vault
 echo "initializing Vault"
